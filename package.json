@@ -2,11 +2,11 @@
   "name": "shape-onboarding",
   "version": "0.1.0",
   "private": true,
-  "description": "Onboarding V2 prototype for Shape Rotator preference onboarding with hidden shape reveal and PR-ready markdown export.",
+  "description": "Retired Onboarding V2 archive. The Cloudflare project redirects to the canonical Onboarding V1 continuous radial-controls flow.",
   "scripts": {
     "build": "node scripts/build-public.js",
     "start": "node server.js",
     "verify": "node scripts/verify-cdp.js",
-    "deploy": "npm run build && npx wrangler pages deploy dist --project-name shape-onboarding --branch main --commit-hash local-demo --commit-message \"Public Onboarding V2 hidden-shape demo\" --commit-dirty=true"
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name shape-onboarding --branch main --commit-hash local-demo --commit-message \"Retire Onboarding V2 and redirect to Onboarding V1\" --commit-dirty=true"
   }
 }
