@@ -1,12 +1,12 @@
-# Shape Onboarding
+# Onboarding V2
 
 Public demo: https://shape-onboarding.pages.dev/
 
-This repo is only for the Shape Rotator preference onboarding flow. The root route is the continuous hidden-shape profile onboarding flow: a participant answers cohort setup questions by clicking predictive radial bubbles, and every answer adds one point to a route that rotates left as the line accumulates.
+This repo is Onboarding V2: the current Shape Rotator hidden-shape preference onboarding flow. The root route is the continuous hidden-shape profile onboarding flow: a participant answers cohort setup questions by drawing through predictive radial bubbles, and every answer adds one point to a route that becomes the hidden shape.
 
 Each setup question is a radial chart of cohort-derived suggestions, with `Other` always available at the bottom. The next question's bubbles reorder from the profile points already selected, so the flow feels like one line being bent by predictions rather than a stack of disconnected form fields. A normal answer auto-advances; `Other` pauses for typed context. The final output remains a normal `cohort-data/people/<slug>.md` profile edit with a hidden `preference_snapshot.hidden_shape` section for the route glyph.
 
-The Sorting Hat routing instrument is intentionally split into its own repo and Cloudflare Pages project so the onboarding surface is not mixed with the routing-mark prototype.
+Onboarding V1 lives in the `Radial-controls` repo. Sorting Hat is intentionally split into its own repo and Cloudflare Pages project because it is a separate routing-mark identity project, not an onboarding version.
 
 ## Run
 
@@ -16,7 +16,7 @@ npm start
 
 Then open `http://localhost:4173`.
 
-Root and `http://localhost:4173/onboarding.html` load the hidden-shape onboarding flow.
+Root and `http://localhost:4173/onboarding.html` load the Onboarding V2 hidden-shape flow.
 
 ## Verify
 
@@ -32,13 +32,13 @@ This drives the onboarding route through all radial setup stages in headless Edg
 npm run deploy
 ```
 
-Cloudflare Pages is connected to `Mikeishiring/Shape-onboarding` and builds `npm run build` into `dist` on the `main` production branch. Pushing to `main` triggers a production deployment. This project should continue to deploy only to `shape-onboarding.pages.dev`.
+Cloudflare Pages is connected to `Mikeishiring/Shape-onboarding` and builds `npm run build` into `dist` on the `main` production branch. Pushing to `main` triggers a production deployment. This project should continue to deploy only Onboarding V2 to `shape-onboarding.pages.dev`.
 
 ## Project Boundary
 
-- `Shape-onboarding`: profile intake and hidden-shape onboarding.
-- `Sorting-hat`: cohort routing mark identity surfaces.
-- `Radial-controls`: reusable radial control grammar and design experiments.
+- `Radial-controls`: Onboarding V1, the radial-controls onboarding prototype.
+- `Shape-onboarding`: Onboarding V2, the current hidden-shape onboarding flow.
+- `Sorting-hat`: a separate routing-mark identity project, not an onboarding version.
 - Old prototype routes redirect to their owning project instead of being served from this repo.
 
 ## What It Produces

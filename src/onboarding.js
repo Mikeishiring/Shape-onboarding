@@ -246,7 +246,7 @@ function render() {
   const progress = Math.round(state.entries.length / stages.length * 100);
   app.innerHTML = `
     <header class="topbar">
-      <div class="brand"><div class="brand-mark"></div><div><div class="kicker">Shape Rotator hidden-shape onboarding</div><h1>Draw your profile</h1></div></div>
+      <div class="brand"><div class="brand-mark"></div><div><div class="kicker">Onboarding V2 · hidden-shape flow</div><h1>Draw your profile</h1></div></div>
       <div class="actions">
         <button class="btn" data-action="back" ${state.stage === 0 && !state.entries.length ? "disabled" : ""}>Back</button>
         <button class="btn" data-action="reset">Reset</button>
