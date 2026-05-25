@@ -226,9 +226,9 @@ function render() {
 }
 
 function stageText(stage) {
-  if (stage.mode === "color") return "This pass is color only. Hold the center, drag toward a color, release.";
-  if (stage.mode === "shape") return "This pass is shape only. The ring stays neutral so the geometry is the signal.";
-  return "This pass is line behavior only. The line describes how people should route work to you.";
+  if (stage.mode === "color") return "Color only. Hold the center, drag toward a color, release.";
+  if (stage.mode === "shape") return "Shape only. Hold the center, drag toward a contribution, release.";
+  return "Line behavior only. Hold the center, drag toward a routing pattern, release.";
 }
 
 function renderPassRow(stage) {
@@ -257,7 +257,6 @@ function renderInstrument(stage) {
       <circle class="center-target" cx="0" cy="0" r="24"></circle>
       <text class="center-label" x="0" y="-2" text-anchor="middle">hold</text>
       <text class="center-label sub" x="0" y="13" text-anchor="middle">drag</text>
-      ${choice ? `<text class="choice-label" x="0" y="168" text-anchor="middle">${choice.label}</text>` : ""}
     </svg>
   `;
 }

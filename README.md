@@ -2,9 +2,9 @@
 
 Public demo: https://shape-onboarding.pages.dev/
 
-This is a standalone prototype for the Shape Rotator preference onboarding idea. The root route is the hidden-shape onboarding flow: a participant answers profile setup questions by clicking radial bubbles, and every answer adds a point to a route that closes into a reveal glyph at the end.
+This is a standalone prototype space for the Shape Rotator preference onboarding idea. The root route is the newer click-drag routing instrument: a participant makes a compact profile mark by selecting current state, contribution shape, and routing line.
 
-Each setup question is a radial chart of cohort-derived suggestions, with `Other` always available at the bottom. A normal answer auto-advances; `Other` pauses for typed context. The final output remains a normal `cohort-data/people/<slug>.md` profile edit with a hidden `preference_snapshot.hidden_shape` section for the route glyph.
+The hidden-shape onboarding flow is preserved at `/onboarding.html`. Each setup question is a radial chart of cohort-derived suggestions, with `Other` always available at the bottom. A normal answer auto-advances; `Other` pauses for typed context. The final output remains a normal `cohort-data/people/<slug>.md` profile edit with a hidden `preference_snapshot.hidden_shape` section for the route glyph.
 
 The older three-control radial weighting prototype is preserved at `/demo-one.html`.
 
@@ -16,7 +16,7 @@ npm start
 
 Then open `http://localhost:4173`.
 
-The onboarding experiment is also available at `http://localhost:4173/onboarding.html`; both root and `/onboarding.html` load the same public demo.
+Use `http://localhost:4173/onboarding.html` for the hidden-shape onboarding flow, and `http://localhost:4173/demo-one.html` for the older radial weighting prototype.
 
 ## Verify
 
@@ -32,7 +32,7 @@ This drives the onboarding route through all radial setup stages in headless Edg
 npm run deploy
 ```
 
-This builds a clean `dist/` directory and deploys it to the Cloudflare Pages project `radial-controls` on the `main` production branch.
+Cloudflare Pages is connected to `Mikeishiring/Shape-onboarding` and builds `npm run build` into `dist` on the `main` production branch. Pushing to `main` triggers a production deployment.
 
 ## What It Produces
 
