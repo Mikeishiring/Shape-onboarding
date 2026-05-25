@@ -98,10 +98,23 @@ async function main() {
       returnByValue: true,
       expression: `(async () => {
         const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-        const pick = (stage, option) => {
+        const center = (el) => {
+          const rect = el.getBoundingClientRect();
+          return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+        };
+        const pick = async (stage, option) => {
           const el = document.querySelector('[data-stage="' + stage + '"][data-option="' + option + '"]');
           if (!el) throw new Error("missing option " + stage + ":" + option);
-          el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
+          const handle = document.querySelector('[data-action="handle"]');
+          const svg = document.querySelector(".trace");
+          if (!handle || !svg) throw new Error("missing drag handle");
+          const start = center(handle);
+          const end = center(el);
+          const pointer = { bubbles: true, cancelable: true, view: window, pointerId: 7, pointerType: "mouse", isPrimary: true };
+          handle.dispatchEvent(new PointerEvent("pointerdown", { ...pointer, clientX: start.x, clientY: start.y }));
+          svg.dispatchEvent(new PointerEvent("pointermove", { ...pointer, clientX: (start.x + end.x) / 2, clientY: (start.y + end.y) / 2 }));
+          svg.dispatchEvent(new PointerEvent("pointermove", { ...pointer, clientX: end.x, clientY: end.y }));
+          svg.dispatchEvent(new PointerEvent("pointerup", { ...pointer, clientX: end.x, clientY: end.y }));
         };
         const route = [
           ["role", "product"],
@@ -116,7 +129,7 @@ async function main() {
           ["anything_else", "nothing"]
         ];
         for (const [stage, option] of route) {
-          pick(stage, option);
+          await pick(stage, option);
           await wait(300);
         }
         const reveal = document.querySelector('[data-action="reveal"]');
