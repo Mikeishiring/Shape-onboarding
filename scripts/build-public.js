@@ -41,4 +41,14 @@ fs.writeFileSync(
   ].join("\n"),
 );
 
+fs.writeFileSync(
+  path.join(dist, "_redirects"),
+  [
+    "/gesture.html https://sorting-hat-ak1.pages.dev/ 302",
+    "/demo-one.html https://radial-controls.pages.dev/ 302",
+    "/mark-composer.html https://sorting-hat-ak1.pages.dev/mark-composer.html 302",
+    "",
+  ].join("\n"),
+);
+
 console.log(`Built public demo in ${dist}`);
