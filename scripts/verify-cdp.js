@@ -75,7 +75,7 @@ async function main() {
     const version = await waitForCdp();
     cdp = await connect(version.webSocketDebuggerUrl);
     const target = await cdp.send("Target.createTarget", {
-      url: "http://localhost:4173/",
+      url: "http://localhost:4173/onboarding.html",
     });
     const attached = await cdp.send("Target.attachToTarget", {
       targetId: target.targetId,
@@ -166,7 +166,7 @@ async function main() {
       deviceScaleFactor: 1,
       mobile: true,
     }, sessionId);
-    await cdp.send("Page.navigate", { url: "http://localhost:4173/" }, sessionId);
+    await cdp.send("Page.navigate", { url: "http://localhost:4173/onboarding.html" }, sessionId);
     await delay(700);
     const mobile = await cdp.send("Runtime.evaluate", {
       returnByValue: true,
