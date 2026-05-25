@@ -34,6 +34,13 @@ npm run deploy
 
 Cloudflare Pages is connected to `Mikeishiring/Shape-onboarding` and builds `npm run build` into `dist` on the `main` production branch. Pushing to `main` triggers a production deployment. This project should continue to deploy only to `shape-onboarding.pages.dev`.
 
+## Project Boundary
+
+- `Shape-onboarding`: profile intake and hidden-shape onboarding.
+- `Sorting-hat`: cohort routing mark identity surfaces.
+- `Radial-controls`: reusable radial control grammar and design experiments.
+- Old prototype routes redirect to their owning project instead of being served from this repo.
+
 ## What It Produces
 
 - Shape Rotator person frontmatter for `cohort-data/people/<slug>.md`
