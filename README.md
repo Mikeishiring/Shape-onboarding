@@ -36,10 +36,12 @@ Cloudflare Pages is connected to `Mikeishiring/Shape-onboarding` and builds `npm
 
 ## Project Boundary
 
-- `Radial-controls`: Onboarding V1, the radial-controls onboarding prototype.
-- `Shape-onboarding`: Onboarding V2, the current hidden-shape onboarding flow.
-- `Sorting-hat`: a separate routing-mark identity project, not an onboarding version.
+- `Shape-onboarding`: Onboarding V2, the current hidden-shape onboarding flow. GitHub: `Mikeishiring/Shape-onboarding`. Cloudflare Pages: `shape-onboarding` / `https://shape-onboarding.pages.dev/`.
+- `Sorting-hat`: separate routing-mark identity project, not an onboarding version. GitHub: `Mikeishiring/Sorting-hat`. Cloudflare Pages: `sorting-hat` / `https://sorting-hat-ak1.pages.dev/`.
+- `Radial-controls`: Onboarding V1, the radial-controls onboarding prototype. GitHub: `Mikeishiring/Radial-controls`. Cloudflare Pages: `radial-controls` / `https://radial-controls.pages.dev/`.
 - Old prototype routes redirect to their owning project instead of being served from this repo.
+
+Related origin note: `radial-dial` is a reusable React marking-menu/radial-dials component, not one of the three deployed products above.
 
 ## What It Produces
 
