@@ -109,7 +109,8 @@ async function main() {
           const svg = document.querySelector(".trace");
           if (!handle || !svg) throw new Error("missing drag handle");
           const start = center(handle);
-          const end = center(el);
+          const mark = el.querySelector(".option-glyph") || el;
+          const end = center(mark);
           const pointer = { bubbles: true, cancelable: true, view: window, pointerId: 7, pointerType: "mouse", isPrimary: true };
           handle.dispatchEvent(new PointerEvent("pointerdown", { ...pointer, clientX: start.x, clientY: start.y }));
           svg.dispatchEvent(new PointerEvent("pointermove", { ...pointer, clientX: (start.x + end.x) / 2, clientY: (start.y + end.y) / 2 }));
