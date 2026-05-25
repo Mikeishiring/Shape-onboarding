@@ -150,6 +150,65 @@ function selectedEntries() {
   }).filter(Boolean);
 }
 
+function displayOptions(question) {
+  const options = question.options.filter((option) => !option.isOther);
+  const scored = options
+    .map((option, index) => ({ option, index, score: optionScore(question, option) }))
+    .sort((a, b) => b.score - a.score || a.index - b.index);
+  const other = question.options.find((option) => option.isOther);
+  return [...scored.map((item) => item.option), other].filter(Boolean);
+}
+
+function optionScore(question, option) {
+  if (option.isOther) return -999;
+  const previous = selectedEntries().filter((entry) => entry.question.id !== question.id);
+  if (!previous.length) return 0;
+
+  let score = 0;
+  for (const entry of previous) {
+    score += dot(entry.option.profile, option.profile) * 0.08;
+    score += dot(entry.option.posture, option.posture) * 0.12;
+    score += textAffinity(entry.value, option.label) + textAffinity(entry.value, option.desc) * 0.6;
+  }
+
+  const role = selectionId("role");
+  const geo = selectionId("geo");
+  if (role === "engineering" && ["tee", "agentic", "architecture-review", "unblock-technical"].includes(option.id)) score += 12;
+  if (role === "design" && ["design", "product-pass", "demo-story", "live-if-stuck"].includes(option.id)) score += 12;
+  if (role === "product" && ["design", "bd-gtm", "product-pass", "demo-story", "ship-prototype"].includes(option.id)) score += 10;
+  if (role === "research" && ["research-to-product", "mechanism-design", "research-critique", "learn-context"].includes(option.id)) score += 10;
+  if (geo === "remote" && ["async-context", "async", "heads-down"].includes(option.id)) score += 8;
+  if (geo === "nyc" && ["live-blocks", "office-hours", "intro-routing"].includes(option.id)) score += 6;
+  return score;
+}
+
+function dot(a = {}, b = {}) {
+  return Object.entries(a).reduce((sum, [key, value]) => sum + value * (b[key] || 0), 0);
+}
+
+function selectionId(questionId) {
+  return state.selections[questionId] || "";
+}
+
+function textAffinity(source = "", target = "") {
+  const haystack = `${source} ${target}`.toLowerCase();
+  let score = 0;
+  if (haystack.includes("design") || haystack.includes("product") || haystack.includes("interface")) score += 2;
+  if (haystack.includes("engineering") || haystack.includes("technical") || haystack.includes("architecture")) score += 2;
+  if (haystack.includes("research") || haystack.includes("mechanism")) score += 2;
+  if (haystack.includes("async") || haystack.includes("context")) score += 1.5;
+  if (haystack.includes("gtm") || haystack.includes("bd") || haystack.includes("users")) score += 1.5;
+  return score;
+}
+
+function predictionCopy(question) {
+  const previous = selectedEntries();
+  if (!previous.length) return "Start anywhere. After the first point, the next bubbles reorder around the line you are drawing.";
+  const top = displayOptions(question).filter((option) => !option.isOther).slice(0, 2).map((option) => option.label).join(" / ");
+  const context = previous.slice(-2).map((entry) => entry.value || entry.option.label).join(" + ");
+  return `Predicted from ${context}: ${top}. Pick it, bend it, or use Other.`;
+}
+
 function answerValue(question, option) {
   if (!option) return "";
   if (option.isOther) return String(state.others[question.id] || "").trim();
@@ -321,7 +380,7 @@ function render() {
         <header class="stage-head">
           <div class="kicker">${state.revealed ? "Reveal" : `Stage ${state.stage + 1} of ${questions.length}`}</div>
           <h2>${state.revealed ? snap.hidden_shape.reveal_name : question.title}</h2>
-          <p>${state.revealed ? `${summary(snap)} The closed line is a memory hook, not a type label.` : question.copy}</p>
+          <p>${state.revealed ? `${summary(snap)} The closed line is a memory hook, not a type label.` : predictionCopy(question)}</p>
         </header>
         <div class="field">${renderTrace(snap)}<div class="shape-name"><span class="micro">${state.revealed ? "closed route glyph" : "radial path"}</span><strong>${state.revealed ? snap.hidden_shape.reveal_name : `${progress}%`}</strong></div></div>
         <footer class="stage-foot">${renderSteps()}</footer>
@@ -345,7 +404,7 @@ function renderTrace(snap) {
   const points = routePoints();
   const drawPoints = state.revealed ? points.slice(1) : points;
   const question = currentStage();
-  const routeDrift = state.revealed ? "rotate(0deg) scale(1)" : `rotate(${-6 * state.stage}deg) scale(.96)`;
+  const routeDrift = state.revealed ? "rotate(0deg) scale(1)" : `rotate(${-14 * state.stage}deg) translateX(-8px) scale(.96)`;
   const closeLine = state.revealed && complete() ? `<polygon class="closed" points="${points.slice(1).map((point) => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ")}"></polygon>` : "";
   const currentBase = -Math.PI / 2 + state.stage * Math.PI * 2 / questions.length;
   return `<svg class="trace" viewBox="-170 -145 340 290" role="img" aria-label="Radial onboarding path">
@@ -394,24 +453,26 @@ function shortStage(stage) {
 }
 
 function renderOptionPorts(question) {
-  return question.options.map((option, index) => {
-    const point = optionDisplayPoint(question, option, index);
+  const ordered = displayOptions(question);
+  return ordered.map((option, index) => {
+    const point = optionDisplayPoint(question, option, index, ordered);
     const selected = state.selections[question.id] === option.id;
     const visual = optionVisual(option, index);
+    const predicted = !option.isOther && optionScore(question, option) > 0 && index < 2;
     const size = selected ? 34 : option.isOther ? 22 : 28;
     return `<g class="option-port" data-action="select" data-stage="${question.id}" data-option="${option.id}" tabindex="0" role="button" aria-label="${esc(option.label)}">
-      ${glyphMarkup(visual.shape, point.x, point.y, size, `class="option-glyph shape-${visual.shape} ${selected ? "active" : ""} ${option.isOther ? "other-port" : ""}" style="--option-color:${visual.color}"`)}
+      ${glyphMarkup(visual.shape, point.x, point.y, size, `class="option-glyph shape-${visual.shape} ${selected ? "active" : ""} ${predicted ? "predicted" : ""} ${option.isOther ? "other-port" : ""}" style="--option-color:${visual.color}"`)}
       <text class="bubble-num" x="${point.x}" y="${point.y + 4}" text-anchor="middle">${option.isOther ? "+" : index + 1}</text>
       ${optionLabelMarkup(option.label, point)}
     </g>`;
   }).join("");
 }
 
-function optionDisplayPoint(question, option, index) {
+function optionDisplayPoint(question, option, index, orderedOptions = question.options) {
   if (option.isOther) {
     return { x: 0, y: 122, labelX: 0, labelY: 145, anchor: "middle" };
   }
-  const nonOther = question.options.filter((item) => !item.isOther);
+  const nonOther = orderedOptions.filter((item) => !item.isOther);
   const count = nonOther.length;
   const optionIndex = nonOther.findIndex((item) => item.id === option.id);
   const spread = Math.min(Math.PI * 0.92, Math.PI * 0.18 * Math.max(2, count - 1));
@@ -477,15 +538,18 @@ function renderSteps() {
 
 function renderQuestionPanel(question, snap) {
   const selected = selectedOption(question);
+  const ordered = displayOptions(question);
   return `<aside class="panel question-panel">
-    <div class="micro">Radial readout</div>
+    <div class="micro">Predictive radial readout</div>
     <div class="selection-card">
       <span class="choice-index">${selected ? (selected.isOther ? "+" : question.options.indexOf(selected) + 1) : state.stage + 1}</span>
-      <span><span class="choice-title">${selected ? selected.label : "Choose from the visual field"}</span><span class="choice-desc">${selected ? selected.desc : "The chart is the control. This panel only mirrors the selected signal."}</span></span>
+      <span><span class="choice-title">${selected ? selected.label : "Choose from the rotating field"}</span><span class="choice-desc">${selected ? selected.desc : "The next bubbles are reordered from the points already on your line."}</span></span>
     </div>
-    <div class="choice-strip">${question.options.map((option, index) => {
+    <div class="predictive-note">${predictionCopy(question)}</div>
+    <div class="choice-strip">${ordered.map((option, index) => {
       const visual = optionVisual(option, index);
-      return `<button class="choice-chip ${option.isOther ? "is-other" : ""}" style="--option-color:${visual.color}" data-action="select" data-stage="${question.id}" data-option="${option.id}" aria-pressed="${state.selections[question.id] === option.id}"><span class="choice-mark shape-${visual.shape}"></span><span>${option.isOther ? "Other" : shortOptionLabel(option.label)}</span></button>`;
+      const predicted = !option.isOther && optionScore(question, option) > 0 && index < 2;
+      return `<button class="choice-chip ${option.isOther ? "is-other" : ""} ${predicted ? "is-predicted" : ""}" style="--option-color:${visual.color}" data-action="select" data-stage="${question.id}" data-option="${option.id}" aria-pressed="${state.selections[question.id] === option.id}"><span class="choice-mark shape-${visual.shape}"></span><span>${option.isOther ? "Other" : shortOptionLabel(option.label)}</span></button>`;
     }).join("")}</div>
     ${selected?.isOther ? `<label class="other-box"><span class="field-label">Other ${question.id}</span><textarea class="textarea" data-other="${question.id}" placeholder="type the answer we missed">${esc(state.others[question.id] || "")}</textarea></label>` : ""}
     ${question.id === "anything_else" && selected?.id === "ask-agent" ? renderAgentAsk() : ""}
