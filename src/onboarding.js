@@ -93,7 +93,7 @@ const app = document.querySelector("#app");
 const center = { x: 0, y: 180 };
 const orbit = 172;
 const view = { x: -220, y: -138, width: 440, height: 322 };
-const startWorld = polar(deg(-142), orbit - 28);
+const startWorld = polar(deg(-166), orbit - 35);
 
 function stage(id, title, field, options) {
   return { id, title, field, options: [...options, other(id)] };
@@ -174,7 +174,7 @@ function textAffinity(a = "", b = "") {
 
 function worldPointFor(stageIndex, laneIndex, laneCount, option) {
   if (option?.isOther) return polar(deg(-88 + stageIndex * 18), orbit - 44);
-  const spread = Math.min(66, Math.max(36, laneCount * 9));
+  const spread = Math.min(92, Math.max(52, laneCount * 13));
   const t = laneCount === 1 ? 0 : laneIndex / (laneCount - 1);
   const base = -92 + stageIndex * 21;
   const angle = base - spread / 2 + t * spread;
@@ -316,7 +316,7 @@ function renderOption(item, index) {
   return `<g class="option-port ${item.predicted ? "is-predicted" : ""}" data-action="option" data-stage="${currentStage().id}" data-option="${item.option.id}" tabindex="0" role="button" aria-label="${esc(item.option.label)}">
     ${glyphMarkup(visual.shape, item.point.x, item.point.y, size, `class="option-glyph ${item.predicted ? "predicted" : ""} ${item.option.isOther ? "other-port" : ""}" style="--option-color:${visual.color}"`)}
     <text class="bubble-num" x="${item.point.x}" y="${item.point.y + 4}" text-anchor="middle">${item.option.isOther ? "+" : index + 1}</text>
-    ${optionLabelMarkup(item.option.label, item.point)}
+    ${optionLabelMarkup(item.option.label, item.point, index)}
   </g>`;
 }
 
@@ -722,9 +722,9 @@ function glyphPoints(shape, x, y, size) {
   }).join(" ");
 }
 
-function optionLabelMarkup(label, point) {
+function optionLabelMarkup(label, point, index = 0) {
   const lines = optionLabelLines(label);
-  const y = point.y + 28 - (lines.length - 1) * 4.6;
+  const y = point.y + 32 + (index % 2) * 12 - (lines.length - 1) * 4.6;
   return `<text class="bubble-label" x="${point.x}" y="${y}" text-anchor="middle">${lines.map((line, index) => `<tspan x="${point.x}" dy="${index === 0 ? 0 : 9.2}">${esc(line)}</tspan>`).join("")}</text>`;
 }
 
