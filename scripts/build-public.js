@@ -24,9 +24,8 @@ fs.mkdirSync(dist, { recursive: true });
 
 copyFile(path.join(root, "index.html"), path.join(dist, "index.html"));
 copyFile(path.join(root, "onboarding.html"), path.join(dist, "onboarding.html"));
-copyFile(path.join(root, "demo-one.html"), path.join(dist, "demo-one.html"));
-copyFile(path.join(root, "gesture.html"), path.join(dist, "gesture.html"));
-copyDir(path.join(root, "src"), path.join(dist, "src"));
+copyFile(path.join(root, "src", "onboarding.css"), path.join(dist, "src", "onboarding.css"));
+copyFile(path.join(root, "src", "onboarding.js"), path.join(dist, "src", "onboarding.js"));
 
 fs.writeFileSync(
   path.join(dist, "_headers"),
